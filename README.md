@@ -1,13 +1,15 @@
-# To-Do List Web Application (LISM)
+# LISM - To-Do List Web Application
+
 <p>
   <img alt = "Preview" src = "/Preview.png">
 </p> 
 
-Languages: Python, SQL, HTML, CSS, & JavaScript
+**Languages:** Python, SQL, HTML, CSS, & JavaScript
 
-Description: A dynamic web application to create, manage, and track to-do lists. It features user authentication, a responsive UI, and a database system.
+**Description:** 
+LISM is a dynamic web application to create, manage, and track to-do lists. It features user authentication, a responsive UI, and a database system. This web application was developed as my CS50 final project.
 
-How to run:
+## How to run:
 - Open this repository in a codespace.
 - Run `pip3 install -r requirements.txt` to install dependencies.
 - Run `flask run` to start the web application.
