@@ -1,0 +1,277 @@
+{% extends "layout.html" %}
+
+{% block title %}
+{% if listinfo[0]["title"] %}
+Edit
+{% else %}
+Create
+{% endif %}
+{% endblock %}
+
+{% block main %}
+{% if listinfo[0]["title"] %}
+<form id="create" action="/edit/{{ listinfo[0].title }}" method="post" style="padding-top: 2rem;" enctype="multipart/form-data">
+    {% else %}
+    <form id="create" action="/create" method="post" style="padding-top: 2rem;" enctype="multipart/form-data">
+        {% endif %}
+        <div class="organizerc">
+            <!-- List name -->
+            {% if listinfo[0]["title"] %}
+            <h3 class="mb-4">List Title</h3>
+            {% else %}
+            <h3 class="mb-4">New List Title</h3>
+            {% endif %}
+            <div class="mb-4">
+                {% if listinfo[0]["title"] %}
+                <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="title" placeholder="Title" type="text" value="{{ listinfo[0].title }}" required>
+                {% else %}
+                <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="title" placeholder="Title" type="text" required>
+                {% endif %}
+            </div>
+            <!-- Additional Texts -->
+            {% if listinfo[0]["subtext"] %}
+            <h3 class="mb-4">Sub Text</h3>
+            {% else %}
+            <h3 class="mb-4">Add Sub Text</h3>
+            {% endif %}
+            <div class="mb-4">
+                {% if listinfo[0]["subtext"] %}
+                <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="subtext" placeholder="A quote, reminder, or etc." type="text" value="{{ listinfo[0].subtext }}">
+                {% else %}
+                <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="subtext" placeholder="A quote, reminder, or etc." type="text">
+                {% endif %}
+            </div>
+            <!-- List image / icon -->
+            <div class="mb-4" id="ulid">
+                {% if listinfo[0]["image"] %}
+                <h3 class="mb-4">Image / Icon</h3>
+                {% else %}
+                <h3 class="mb-4">Add Image / Icon</h3>
+                {% endif %}
+                {% if listinfo[0]["image"] %}
+                <img class="icon c" src="{{ listinfo[0].image }}" onerror="try { if('{{ listinfo[0].image }}' == 'None' || '{{ listinfo[0].image }}' == '') {return err} else {this.src = '/static/images/{{ listinfo[0].image }}';}} catch(err) {this.style.display='none';}">
+                {% else %}
+                <img class="icon c" src='' onerror="this.style.display='none'">
+                {% endif %}
+                <!-- Switch between image and link -->
+                <div style="position: relative;">
+                    <label class="switch">
+                        <input id="lom" type="checkbox">
+                        <span class="slider round"></span>
+                        <input type="hidden" value="image" id="indicator" name="indicator">
+                    </label>
+                    <input id="signal" type="hidden" value="false" name="signal">
+                    <div id="imageinput">
+                        <label for="uli" class="form-label">
+                            <input class="form-control" type="file" accept="image/*" name="image" id="uli" value="/static/images/{{ listinfo[0].image }}">
+                        </label>
+                    </div>
+                    <div id="linkinput" style="display: none">
+                        <label for="uil" class="form-label" data-on="Dark" data-off="Light" style="display: block;">
+                            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" type="text" name="link" placeholder="Link" id="uil" disabled>
+                        </label>
+                    </div>
+                    <span id="remove">X</span>
+                </div>
+            </div>
+            <!-- Submit -->
+            <button id="submit" class="btn btn-primary" type="submit">
+                {% if listinfo[0]["title"] %}
+                Edit
+                {% else %}
+                Create
+                {% endif %}
+            </button>
+        </div>
+        {% if tasks[0] %}
+        <input type="hidden" id="count" name="count" value="{{ tasks|length }}">
+        {% else %}
+        <input type="hidden" id="count" name="count" value="1">
+        {% endif %}
+        <!-- Task list -->
+        <div class="organizerc" id="tasklist">
+            <h3 id="img" class="mb-4">List</h3>
+            {% if tasks[0] %}
+            {% for task in tasks %}
+            {% if task["number"] > 1 %}
+            <div class="mb-4 added" id="task{{ task.number }}">
+                <input autocomplete="off" autofocus class="form-control mx-auto w-auto added3" name="task{{ task.number }}" id="number{{ task.number }}" placeholder="Insert text" type="text" value="{{ task.task }}" required>
+                <span id="delete{{ task.number }}" class="delete added2">X</span>
+            </div>
+            {% else %}
+            <div class="mb-4" id="task{{ task.number }}">
+                <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="task{{ task.number }}" id="number{{ task.number }}" placeholder="Insert text" type="text" value="{{ task.task }}" required>
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% else %}
+            <div class="mb-4">
+                <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="task1" id="number1" placeholder="Insert text" type="text" required>
+            </div>
+            {% endif %}
+        </div>
+    </form>
+
+    <!-- Add task button -->
+    <button id="plus" class="btn"></button>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("main").style.overflow = "scroll";
+        })
+
+        // Add list button
+        let list = document.getElementById("tasklist");
+        let count = document.getElementById("count");
+        document.getElementById("plus").addEventListener("click", function() {
+            // Create elements
+            let div = document.createElement("div");
+
+            // Set elements attribute
+            x = parseInt(count.value) + 1;
+            div.setAttribute("id", "task" + x);
+            div.setAttribute("class", "mb-4 added");
+
+            // Insert elements' content
+            div.innerHTML = '<input autocomplete="off" class="form-control mx-auto w-auto added3" name="task' + x + '" id = "number' + x + '" placeholder="Insert text" type="text" required><span id="delete' + x + '" class="delete added2">X</span>';
+
+            // Insert div into parent div
+            list.appendChild(div);
+            document.getElementById("number" + x).focus();
+
+            // Delete added list
+            let temp = document.getElementById("delete" + (x));
+            temp.addEventListener("click", function() {
+
+                // Get task number to remove
+                let v = parseInt(temp.parentElement.id.charAt(4));
+                temp.parentElement.remove();
+
+                // Subtract count
+                count.value--;
+
+                if (count.value + 1 >= 2) {
+
+                    // Collect array of added divs, inputs, and delete buttons' ids
+                    let added = document.getElementsByClassName("added");
+                    let added2 = document.getElementsByClassName("added2");
+                    let added3 = document.getElementsByClassName("added3");
+
+                    // Rename data of list below the deleted one
+                    for (let i = v - 2; i < count.value - 1; i++) {
+                        added[i].id = "task" + (i + 2);
+                        added2[i].id = "delete" + (i + 2);
+                        added3[i].name = "task" + (i + 2);
+                        added3[i].id = "number" + (i + 2);
+                    }
+                }
+            })
+
+            // Add count
+            count.value++;
+        })
+
+        let icon = document.getElementsByClassName("icon");
+
+        let il = document.getElementById("lom");
+        let uli = document.getElementById("uli");
+        let uil = document.getElementById("uil");
+
+
+        // Fill icon with uploaded image
+        uli.addEventListener("change", function() {
+            icon[0].src = URL.createObjectURL(event.target.files[0]);
+            icon[0].style = "display: block";
+            il.disabled = true;
+        })
+
+
+        uil.addEventListener("change", function() {
+            icon[0].src = uil.value;
+            icon[0].style = "display: block";
+            if (uil.value != '') {
+                il.disabled = true;
+            } else if (uil.value == '') {
+                il.disabled = false;
+            }
+        })
+
+        // Remove image
+        let remove = document.getElementById("remove");
+        remove.addEventListener("click", function() {
+            const fileListArr = Array.from(uli.files);
+            fileListArr.splice(1, 1);
+            icon[0].style.display = 'none';
+            uli.value = '';
+            uil.value = '';
+            il.disabled = false;
+        })
+
+        // Switch between image and link
+        il.addEventListener("change", function() {
+            let imageinput = document.getElementById("imageinput");
+            let linkinput = document.getElementById("linkinput");
+            let indicator = document.getElementById("indicator");
+            if (il.checked) {
+                imageinput.style.display = 'none';
+                uli.disabled = true;
+                linkinput.style.display = 'block';
+                uil.disabled = false;
+                indicator.value = 'link';
+                remove.style.right = "-20%";
+            } else {
+                imageinput.style.display = 'block';
+                uli.disabled = false;
+                linkinput.style.display = 'none';
+                uil.disabled = true;
+                indicator.value = 'input';
+                remove.style.right = "3%";
+            }
+        })
+    </script>
+
+    {% if tasks[0] %}
+    <script>
+        // Task numbering and deletion for edit
+        document.addEventListener("DOMContentLoaded", function() {
+            let y = document.getElementsByClassName("delete");
+            for (let i = 0; i < y.length; i++) {
+                y[i].addEventListener("click", function() {
+                    y[i].parentElement.remove();
+
+                    // Subtract count
+                    count.value--;
+
+                    if (count.value + 1 >= 2) {
+
+                        // Collect array of added divs, inputs, and delete buttons' ids
+                        let added = document.getElementsByClassName("added");
+                        let added2 = document.getElementsByClassName("added2");
+                        let added3 = document.getElementsByClassName("added3");
+
+                        // Rename data of list below the deleted one
+                        for (let j = i; j < count.value - 1; j++) {
+                            added[j].id = "task" + (j + 2);
+                            added2[j].id = "delete" + (j + 2);
+                            added3[j].name = "task" + (j + 2);
+                            added3[j].id = "number" + (j + 2);
+                        }
+                    }
+                })
+            }
+        })
+
+        // Signal for icon image deletion
+        let signal = document.getElementById("signal")
+        document.getElementById("remove").addEventListener("click", function() {
+            if (signal.value == "false") {
+                signal.value = "true";
+            }
+        })
+
+        document.getElementById("uli").addEventListener("change", function() {
+            signal.value = "false";
+        })
+    </script>
+    {% endif %}
+    {% endblock %}

@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Error
+{% endblock %}
+
+{% block main %}
+<!-- Show error code -->
+<div id="code" class="container-fluid error">
+    Error Code : {{ code }}
+</div>
+
+<!-- Show error message -->
+<div class="container-fluid error">
+    <span id="message">{{ message }}</span>
+</div>
+
+<!-- Go back button -->
+<div class="container-fluid error">
+    <button id="go_back" class="btn btn-primary" onclick="history.back()">Go Back</button>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Register
+{% endblock %}
+
+{% block main %}
+<form action="/register" method="post">
+    <!-- Username -->
+    <div class="mb-2 rd">
+        <label for="username">
+            <i class="fa fa-user" aria-hidden="true"></i>
+        </label>
+        <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username" placeholder="Username" type="text">
+    </div>
+    <!-- Password -->
+    <div class="rd">
+        <label for="password">
+            <i class="fa fa-key" aria-hidden="true"></i>
+        </label>
+        <input class="form-control mx-auto w-auto" id="password" name="password" placeholder="Password" type="password" minlength="8" style="margin-bottom: 10px;">
+        <small id="passwordHelpBlock" class="form-text text-muted" style="margin-left: 95px;">
+            Your password must at least be 8 letters long.
+        </small>
+    </div>
+    <!-- Confirmation -->
+    <div class="rd" style="margin-bottom: 1.75rem;">
+        <label for="confirmation">
+            <i class="fa fa-check" aria-hidden="true"></i>
+        </label>
+        <input autocomplete="off" class="form-control mx-auto w-auto" id="confirmation" name="confirmation" placeholder="Confirmation" type="Confirmation">
+    </div>
+    <!-- Submit -->
+    <button class="btn btn-primary" type="submit" style="width: 50%;">Register</button>
+</form>
+{% endblock %}

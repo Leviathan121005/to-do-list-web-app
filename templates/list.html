@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block title %}
+List
+{% endblock %}
+
+{% block main %}
+<div id="profile">
+    <div id="west">
+        <img id="profpic" class="icon" src="{{ listinfo[0].image }}" onerror="try { if('{{ listinfo[0].image }}' == 'None' || '{{ listinfo[0].image }}' == '') {return err} else {this.src = '/static/images/{{ listinfo[0].image }}';}} catch(err) {this.style.display='none';}">
+        <div id="title">
+            {{ listinfo[0]["title"] }}
+            <input type="hidden" value='{{ listinfo[0].title }}' id="store">
+        </div>
+        <div id="subtext">
+            {{ listinfo[0]["subtext"] }}
+        </div>
+    </div>
+    <div id="east">
+        {% for task in tasks %}
+        <div class="task">
+            <span> {{ task["task"] }} </span>
+            {% if task["done"] == 1 %}
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
+            {% elif task["done"] == 0 %}
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("main").style.overflow = "scroll";
+
+        let select = document.getElementsByClassName("form-check-input");
+        for (let i = 0; i < select.length; i++) {
+            select[i].addEventListener("change", function() {
+                let title = document.getElementById("store");
+                const uc = [title.value, i + 1];
+                if (select[i].checked) {
+                    let xhr = new XMLHttpRequest();
+                    let url = '/check';
+                    xhr.open("POST", url, true);
+                    xhr.setRequestHeader('Content-Type', 'application/json');
+                    xhr.send(JSON.stringify(uc));
+                } else {
+                    let xhr = new XMLHttpRequest();
+                    let url = '/uncheck';
+                    xhr.open("POST", url, true);
+                    xhr.setRequestHeader('Content-Type', 'application/json');
+                    xhr.send(JSON.stringify(uc));
+                }
+            })
+        }
+    })
+</script>
+{% endblock %}
